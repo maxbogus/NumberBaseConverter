@@ -4,67 +4,61 @@ import kotlin.math.pow
 
 fun main() {
     do {
-        println("Do you want to convert /from decimal or /to decimal? (To quit type /exit)")
+        println("Enter two numbers in format: {source base} {target base} (To quit type /exit)")
         val input = readLine()!!
-        when (input) {
-            "/from" -> {
-                println("Enter number in decimal system:")
-                val number = readLine()!!.toInt()
-                println("Enter target base:")
-                val radix = readLine()!!.toInt()
-                println("Conversion result: ${convertFrom(number, radix)}")
-            }
-            "/to" -> {
-                println("Enter source number:")
-                val number = readLine()!!
-                println("Enter source base:")
-                val base = readLine()!!.toInt()
-                println("Conversion to decimal result: ${convertTo(number, base)}")
-            }
+        if (input != "/exit") {
+            val convertedInput = input.split(" ").map { it.toInt() }.toList()
+            val sourceBase = convertedInput[0]
+            val targetBase = convertedInput[1]
+            handleConversions(sourceBase, targetBase)
         }
     } while (input != "/exit")
 }
 
-private fun matchDecimalToHexadecimal(number: Int): String {
-    return when (number) {
-        15 -> "F"
-        14 -> "E"
-        13 -> "D"
-        12 -> "C"
-        11 -> "B"
-        10 -> "A"
-        else -> "$number"
-    }
+private fun handleConversions(source: Int, target: Int) {
+    do {
+        println("Enter number in base $source to convert to base $target (To go back type /back)")
+        val input = readLine()!!
+        if (input != "/back") {
+            val decimalNumber = if (source != 10) {
+                convertTo(input, source)
+            } else { input } // convertFromSourceToDecimal
+            val result = convertFrom(decimalNumber.toInt(), target)
+            println("Conversion result: $result")
+        }
+    } while (input != "/back")
 }
 
 private fun convertFrom(number: Int, radix: Int): String {
     val listOfRemainders = mutableListOf<String>()
     var quotient = number
     do {
-        listOfRemainders.add(0, if (radix != 16) "${quotient % radix}" else matchDecimalToHexadecimal(quotient % 16))
+        listOfRemainders.add(0, if (radix <= 10) "${quotient % radix}" else matchDecimalToLetter(quotient % 16))
         quotient /= radix
     } while (quotient > 0)
     return listOfRemainders.joinToString("")
-}
-
-private fun matchHexadecimalToOctal(number: Char): String {
-    return (when (number) {
-        'f' -> 15
-        'e' -> 14
-        'd' -> 13
-        'c' -> 12
-        'b' -> 11
-        'a' -> 10
-        else -> number
-    }).toString()
 }
 
 private fun convertTo(number: String, radix: Int): String {
     val convertedNumber = number.reversed()
     var sum: Long = 0
     for (i in 0..convertedNumber.length - 1) {
-        val multiplier: String = if (radix != 16) convertedNumber[i].toString() else matchHexadecimalToOctal(convertedNumber[i])
+        val multiplier: String = if (radix <= 10) convertedNumber[i].toString() else transformLetterToDecimal(convertedNumber[i])
         sum += multiplier.toLong() * radix.toDouble().pow(i).toLong()
     }
     return "$sum"
+}
+
+private fun transformLetterToDecimal(number: Char): String {
+    return (when (number) {
+        in 'a'..'z' -> (number + 35) - 'z'
+        else -> number
+    }).toString()
+}
+
+private fun matchDecimalToLetter(number: Int): String {
+    return when (number) {
+        in 11..36 -> "${'a' + (number - 11)}"
+        else -> "$number"
+    }
 }
