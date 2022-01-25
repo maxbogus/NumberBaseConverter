@@ -12,14 +12,14 @@ fun main() {
                 val number = readLine()!!.toInt()
                 println("Enter target base:")
                 val radix = readLine()!!.toInt()
-                println("Conversion result: ${convertDecimal(number, radix)}")
+                println("Conversion result: ${convertFrom(number, radix)}")
             }
             "/to" -> {
                 println("Enter source number:")
                 val number = readLine()!!
                 println("Enter source base:")
                 val base = readLine()!!.toInt()
-                println("Conversion to decimal result: ${convertToDecimal(number, base)}")
+                println("Conversion to decimal result: ${convertTo(number, base)}")
             }
         }
     } while (input != "/exit")
@@ -37,7 +37,7 @@ private fun matchDecimalToHexadecimal(number: Int): String {
     }
 }
 
-private fun convertDecimal(number: Int, radix: Int): String {
+private fun convertFrom(number: Int, radix: Int): String {
     val listOfRemainders = mutableListOf<String>()
     var quotient = number
     do {
@@ -45,14 +45,6 @@ private fun convertDecimal(number: Int, radix: Int): String {
         quotient /= radix
     } while (quotient > 0)
     return listOfRemainders.joinToString("")
-}
-
-private fun convertToDecimal(number: String, radix: Int): String {
-    return when (radix) {
-        8 -> convertFrom(number, radix)
-        2 -> convertFrom(number, radix)
-        else -> convertFrom(number, radix)
-    }
 }
 
 private fun matchHexadecimalToOctal(number: Char): String {
@@ -67,7 +59,7 @@ private fun matchHexadecimalToOctal(number: Char): String {
     }).toString()
 }
 
-private fun convertFrom(number: String, radix: Int): String {
+private fun convertTo(number: String, radix: Int): String {
     val convertedNumber = number.reversed()
     var sum: Long = 0
     for (i in 0..convertedNumber.length - 1) {
