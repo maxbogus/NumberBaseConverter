@@ -49,47 +49,30 @@ private fun convertDecimal(number: Int, radix: Int): String {
 
 private fun convertToDecimal(number: String, radix: Int): String {
     return when (radix) {
-        8 -> convertFromOctal(number)
-        2 -> convertFromBinary(number)
-        else -> convertFromHexadecimal(number)
+        8 -> convertFrom(number, radix)
+        2 -> convertFrom(number, radix)
+        else -> convertFrom(number, radix)
     }
 }
 
-private fun matchHexadecimalToOctal(number: Char): Int {
-    return when (number) {
+private fun matchHexadecimalToOctal(number: Char): String {
+    return (when (number) {
         'f' -> 15
         'e' -> 14
         'd' -> 13
         'c' -> 12
         'b' -> 11
         'a' -> 10
-        else -> number.toString().toInt()
-    }
+        else -> number
+    }).toString()
 }
 
-private fun convertFromHexadecimal(number: String): String {
+private fun convertFrom(number: String, radix: Int): String {
     val convertedNumber = number.reversed()
     var sum: Long = 0
     for (i in 0..convertedNumber.length - 1) {
-        sum += (matchHexadecimalToOctal(convertedNumber[i]).toLong() * 16.toDouble().pow(i).toLong())
-    }
-    return "$sum"
-}
-
-private fun convertFromOctal(number: String): String {
-    val convertedNumber = number.reversed()
-    var sum: Long = 0
-    for (i in 0..convertedNumber.length - 1) {
-        sum += (convertedNumber[i].toString().toLong() * 8.toDouble().pow(i).toLong())
-    }
-    return "$sum"
-}
-
-private fun convertFromBinary(number: String): String {
-    val convertedNumber = number.reversed()
-    var sum: Long = 0
-    for (i in 0..convertedNumber.length - 1) {
-        sum += convertedNumber[i].toString().toLong() * 2.toDouble().pow(i).toLong()
+        val multiplier: String = if (radix != 16) convertedNumber[i].toString() else matchHexadecimalToOctal(convertedNumber[i])
+        sum += multiplier.toLong() * radix.toDouble().pow(i).toLong()
     }
     return "$sum"
 }
