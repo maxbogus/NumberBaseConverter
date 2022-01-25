@@ -1,5 +1,7 @@
 package converter
 
+import kotlin.math.pow
+
 fun main() {
     do {
         println("Do you want to convert /from decimal or /to decimal? (To quit type /exit)")
@@ -10,14 +12,14 @@ fun main() {
                 val number = readLine()!!.toInt()
                 println("Enter target base:")
                 val radix = readLine()!!.toInt()
-                println("Conversion result: ${convertDecimalByTargetBase(number, radix)}")
+                println("Conversion result: ${convertDecimal(number, radix)}")
             }
             "/to" -> {
                 println("Enter source number:")
-                val number = readLine()!!.toInt()
+                val number = readLine()!!
                 println("Enter source base:")
                 val base = readLine()!!.toInt()
-                println("Conversion to decimal result: ${convertDecimalByTargetBase(number, base)}")
+                println("Conversion to decimal result: ${convertToDecimal(number, base)}")
             }
         }
     } while (input != "/exit")
@@ -45,10 +47,49 @@ private fun convertDecimal(number: Int, radix: Int): String {
     return listOfRemainders.joinToString("")
 }
 
-private fun convertDecimalByTargetBase(number: Int, radix: Int): String {
+private fun convertToDecimal(number: String, radix: Int): String {
     return when (radix) {
-        8 -> convertDecimal(number, 8)
-        2 -> convertDecimal(number, 2)
-        else -> convertDecimal(number, 16)
+        8 -> convertFromOctal(number)
+        2 -> convertFromBinary(number)
+        else -> convertFromHexadecimal(number)
     }
+}
+
+private fun matchHexadecimalToOctal(number: Char): Int {
+    return when (number) {
+        'f' -> 15
+        'e' -> 14
+        'd' -> 13
+        'c' -> 12
+        'b' -> 11
+        'a' -> 10
+        else -> number.toString().toInt()
+    }
+}
+
+private fun convertFromHexadecimal(number: String): String {
+    val convertedNumber = number.reversed()
+    var sum: Long = 0
+    for (i in 0..convertedNumber.length - 1) {
+        sum += (matchHexadecimalToOctal(convertedNumber[i]).toLong() * 16.toDouble().pow(i).toLong())
+    }
+    return "$sum"
+}
+
+private fun convertFromOctal(number: String): String {
+    val convertedNumber = number.reversed()
+    var sum: Long = 0
+    for (i in 0..convertedNumber.length - 1) {
+        sum += (convertedNumber[i].toString().toLong() * 8.toDouble().pow(i).toLong())
+    }
+    return "$sum"
+}
+
+private fun convertFromBinary(number: String): String {
+    val convertedNumber = number.reversed()
+    var sum: Long = 0
+    for (i in 0..convertedNumber.length - 1) {
+        sum += convertedNumber[i].toString().toLong() * 2.toDouble().pow(i).toLong()
+    }
+    return "$sum"
 }
