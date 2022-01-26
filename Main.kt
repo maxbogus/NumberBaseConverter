@@ -1,5 +1,6 @@
 package converter
 
+import java.math.BigInteger
 import kotlin.math.pow
 
 fun main() {
@@ -21,32 +22,32 @@ private fun handleConversions(source: Int, target: Int) {
         val input = readLine()!!
         if (input != "/back") {
             val decimalNumber = if (source != 10) {
-                convertTo(input, source)
-            } else { input } // convertFromSourceToDecimal
-            val result = convertFrom(decimalNumber.toInt(), target)
+                convertToDecimal(input, source)
+            } else { input.toBigInteger() } // convertFromSourceToDecimal
+            val result = convertFromDecimal(decimalNumber, target)
             println("Conversion result: $result")
         }
     } while (input != "/back")
 }
 
-private fun convertFrom(number: Int, radix: Int): String {
+private fun convertFromDecimal(number: BigInteger, radix: Int): String {
     val listOfRemainders = mutableListOf<String>()
     var quotient = number
     do {
-        listOfRemainders.add(0, if (radix <= 10) "${quotient % radix}" else matchDecimalToLetter(quotient % 16))
-        quotient /= radix
-    } while (quotient > 0)
+        listOfRemainders.add(0, if (radix <= 10) "${quotient % radix.toBigInteger()}" else matchDecimalToLetter((quotient % radix.toBigInteger()).toInt()))
+        quotient /= radix.toBigInteger()
+    } while (quotient > BigInteger.ZERO)
     return listOfRemainders.joinToString("")
 }
 
-private fun convertTo(number: String, radix: Int): String {
+private fun convertToDecimal(number: String, radix: Int): BigInteger {
     val convertedNumber = number.reversed()
-    var sum: Long = 0
+    var sum: BigInteger = BigInteger.ZERO
     for (i in 0..convertedNumber.length - 1) {
         val multiplier: String = if (radix <= 10) convertedNumber[i].toString() else transformLetterToDecimal(convertedNumber[i])
-        sum += multiplier.toLong() * radix.toDouble().pow(i).toLong()
+        sum += multiplier.toBigInteger() * radix.toDouble().pow(i).toLong().toBigInteger()
     }
-    return "$sum"
+    return sum
 }
 
 private fun transformLetterToDecimal(number: Char): String {
@@ -58,7 +59,7 @@ private fun transformLetterToDecimal(number: Char): String {
 
 private fun matchDecimalToLetter(number: Int): String {
     return when (number) {
-        in 11..36 -> "${'a' + (number - 11)}"
+        in 10..36 -> "${'a' + (number - 10)}"
         else -> "$number"
     }
 }
