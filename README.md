@@ -1,5 +1,5 @@
 # NumberBaseConverter
-This implementation of TicTacToe is for Kotlin
+This implementation of NumberBaseConversion for Kotlin.
 
 # Preparation
 Download Kotlin: https://kotlinlang.org/docs/command-line.html
@@ -10,3 +10,7 @@ Create jar file:
 
 Run it:
 `java -jar Main.jar`
+
+# Instruction
+Enter source and target base. Note that this tool supports bases from 2 to 36.
+Then enter number that you want to convert.
